@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Dragablz;
@@ -37,6 +39,13 @@ namespace PRM.View.TabWindow
             this.Activated += (sender, args) =>
             {
                 this.StopFlashingWindow();
+                // can't switch the focus directly, otherwise the close button, the minimize button, drag and drop, etc. will become invalid.
+                Task.Factory.StartNew(() =>
+                {
+                    Thread.Sleep(50);
+                    if ((System.Windows.Forms.Control.MouseButtons != MouseButtons.Left))
+                        Vm?.SelectedItem?.Content?.MakeItFocus();
+                });
             };
 
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
